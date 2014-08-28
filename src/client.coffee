@@ -1112,8 +1112,8 @@ class Dropbox.Client
   # Alias for "pullChanges" that matches the HTTP API.
   #
   # @see Dropbox.Client#pullChanges
-  delta: (cursor, callback) ->
-    @pullChanges cursor, callback
+  delta: (cursor, params, callback) ->
+    @pullChanges cursor, params, callback
 
   # Checks whether changes have occurred in a user's Dropbox.
   #
