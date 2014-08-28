@@ -1101,8 +1101,6 @@ class Dropbox.Client
         params.cursor = cursor.cursorTag
       else 
         params.cursor = cursor 
-    else
-      params = {}
 
     xhr = new Dropbox.Util.Xhr 'POST', @_urls.delta
     xhr.setParams(params).signWithOauth @_oauth
