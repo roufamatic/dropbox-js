@@ -1065,22 +1065,42 @@ class Dropbox.Client
   #   obtained from a previous call to {Dropbox.Client#pullChanges}, the return
   #   value of {Dropbox.Http.PulledChanges#cursor}, or null / omitted on the
   #   first call to {Dropbox.Client#pullChanges}
+  # @param {Object} params (optional) Set params on the request.
+  #   If the params object contains 'path_prefix', the response will be 
+  #   filtered to only include entries at or under the specified path. For 
+  #   example, a path_prefix of "/Photos/Vacation" will return entries for 
+  #   the path "/Photos/Vacation" and any files and folders under that path. 
+  #   If you use the path_prefix parameter, you must continue to pass the 
+  #   correct prefix on subsequent calls using the returned cursor. You can 
+  #   switch the path_prefix on any existing cursor to a descendant of the 
+  #   existing path_prefix on subsequent calls to /delta. For example if 
+  #   your cursor has no path_prefix, you can switch to any path_prefix. 
+  #   If your cursor has a path_prefix of "/Photos", you can switch it to 
+  #   "/Photos/Vacation". 
   # @param {function(Dropbox.ApiError, Dropbox.Http.PulledChanges)} callback
   #   called with the result of the /delta HTTP request; if the call
   #   succeeds, the second parameter is a {Dropbox.Http.PulledChanges}
   #   describing the changes to the user's Dropbox since the pullChanges call
   #   that produced the given cursor, and the first parameter is null
   # @return {XMLHttpRequest} the XHR object used for this API call
-  pullChanges: (cursor, callback) ->
-    if (not callback) and (typeof cursor is 'function')
-      callback = cursor
-      cursor = null
+  pullChanges: (cursor, params, callback) ->
+    if (not callback) 
+      if (not params) and (typeof cursor is 'function')
+        callback = cursor
+        cursor = null
+        params = {}
+      else if (typeof params is 'function')
+        callback = params
+        params = {}
 
     if cursor
-      if cursor.cursorTag  # cursor is a Dropbox.Http.PulledChanges instance
-        params = { cursor: cursor.cursorTag }
-      else
-        params = { cursor: cursor }
+      if cursor.path_prefix # no cursor, params shifted
+        params = cursor
+        cursor = null
+      else if cursor.cursorTag  # cursor is a Dropbox.Http.PulledChanges instance
+        params.cursor = cursor.cursorTag
+      else 
+        params.cursor = cursor 
     else
       params = {}
 
