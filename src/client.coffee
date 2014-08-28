@@ -1092,7 +1092,10 @@ class Dropbox.Client
       else if (typeof params is 'function')
         callback = params
         params = {}
-
+    
+    if (not params) 
+      params = {}
+		
     if cursor
       if cursor.path_prefix # no cursor, params shifted
         params = cursor
@@ -1101,7 +1104,7 @@ class Dropbox.Client
         params.cursor = cursor.cursorTag
       else 
         params.cursor = cursor 
-
+	
     xhr = new Dropbox.Util.Xhr 'POST', @_urls.delta
     xhr.setParams(params).signWithOauth @_oauth
     @_dispatchXhr xhr, (error, deltaInfo) ->
